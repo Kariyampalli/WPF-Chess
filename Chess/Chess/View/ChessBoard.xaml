@@ -1,0 +1,460 @@
+﻿<UserControl x:Class="Chess.View.ChessBoard"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:vm="clr-namespace:Chess.ViewModel"
+             xmlns:converters="clr-namespace:Chess.View.Converters"
+             xmlns:local="clr-namespace:Chess"
+             mc:Ignorable="d" 
+             d:DesignHeight="450" d:DesignWidth="800"
+             >
+    <Grid>
+        <Grid.Resources>
+            <converters:BackgroundFieldColorConverter x:Key="colorConvertor"></converters:BackgroundFieldColorConverter>
+            <converters:ImageConverter x:Key="imageConverter"></converters:ImageConverter>
+        </Grid.Resources>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+            <ColumnDefinition Width="auto"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+        </Grid.RowDefinitions>
+
+        <Border Grid.Row="0" Grid.Column="0" BorderBrush="Black" BorderThickness="4"  Width="108"   Margin="0,0,20,0" Height="448" VerticalAlignment="Top">
+            <StackPanel>
+                <TextBlock Text="Beaten Black Piece" TextAlignment="Center" TextWrapping="Wrap" FontSize="15" Background="#485475" Foreground="White"></TextBlock>
+                <Grid>
+                    <ItemsControl ItemsSource="{Binding BeatenPieces.BackgroundFields}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="4" Columns="2">
+                                </UniformGrid>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Rectangle Width="50" Height="50">
+                                        <Rectangle.Fill>
+                                            <MultiBinding Converter="{StaticResource colorConvertor}">
+                                                <Binding Path="YPosition"/>
+                                                <Binding Path="XPosition"/>
+                                            </MultiBinding>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ItemsControl ItemsSource="{Binding BeatenPieces.BeatenBlackPieces}"  Width="100">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="4" Columns="2">
+                                </UniformGrid>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Image VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False" Width="50" Height="50">
+                                        <Image.Source>
+                                            <MultiBinding Converter="{StaticResource imageConverter}">
+                                                <Binding Path="PieceType"/>
+                                                <Binding Path="PieceTeam"/>
+                                            </MultiBinding>
+                                        </Image.Source>
+                                    </Image>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="0" Grid.Column="1" Background="White" BorderThickness="3" BorderBrush="Black">
+            <Grid ShowGridLines="false">
+               
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                    <ColumnDefinition Width="auto"/>
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                    <RowDefinition Height="auto"/>
+                </Grid.RowDefinitions>
+
+                <!--SideLeft-->
+                <ItemsControl Grid.Column="0" Grid.Row="1"  ItemsSource="{Binding Board.OrientationNumbers}" BorderBrush="#353e57" BorderThickness="4" Background="#353e57">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="{Binding Board.Y}" Columns="1" Width="50" >
+                            </UniformGrid>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Label Content="{Binding}" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!--SideTop-->
+                <ItemsControl Grid.Column="1" Grid.Row="0"  ItemsSource="{Binding Board.OrientationChars}" BorderBrush="#353e57" BorderThickness="4" Background="#353e57">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" Columns="{Binding Board.X}" Height="50">
+                            </UniformGrid>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Label Content="{Binding}" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!--Fields-->
+
+                <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Board.ChessBoardFields}" BorderBrush="Transparent" BorderThickness="10">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="{Binding Board.Dimensions.Y}" Columns="{Binding Board.Dimensions.X}">
+                            </UniformGrid>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <!--<Rectangle Height="50" Width="50" Fill="{Binding Converter={StaticResource colorConverter},Path=Color}"></Rectangle>-->
+                            <Rectangle Height="50" Width="50">
+                                <Rectangle.Fill>
+                                    <MultiBinding Converter="{StaticResource colorConvertor}">
+                                        <Binding Path="PositionOnBoard.YPosition"/>
+                                        <Binding Path="PositionOnBoard.XPosition"/>
+                                    </MultiBinding>
+                                </Rectangle.Fill>
+                            </Rectangle>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                    <ItemsControl.Style>
+                        <Style>
+                            <Style.Triggers>
+                                <DataTrigger Binding="{Binding CurrentRound.WiteTurn}" Value="False">
+                                    <DataTrigger.EnterActions>
+
+                                        <BeginStoryboard>
+
+                                            <Storyboard>
+                                                <ColorAnimation
+                                                        Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" Duration="0:0:0.3" To="Black" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.EnterActions>
+                                    <DataTrigger.ExitActions>
+                                        <BeginStoryboard>
+                                            <Storyboard>
+                                                <ColorAnimation
+                                                        Storyboard.TargetProperty="BorderBrush.(SolidColorBrush.Color)" Duration="0:0:0.3" To="White" />
+                                            </Storyboard>
+                                        </BeginStoryboard>
+                                    </DataTrigger.ExitActions>
+                                </DataTrigger>
+                            </Style.Triggers>
+                        </Style>
+                    </ItemsControl.Style>
+                </ItemsControl>
+                <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Board.ChessBoardFields}" Margin="0,0,0,0" BorderThickness="10" BorderBrush="Transparent">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+
+                            <UniformGrid Rows="{Binding Board.Dimensions.Y}" Columns="{Binding Board.Dimensions.X}">
+                            </UniformGrid>
+
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Button BorderThickness="2" Width="50" Height="50" BorderBrush="Transparent" Command="{Binding SelectCommand}" IsHitTestVisible="{Binding IsSelectingAllowed}" Visibility="Visible">
+                                    <Button.Style>
+                                        <Style TargetType="Button">
+                                            <Style.Setters>
+                                                <Setter Property="Background">
+                                                    <Setter.Value>
+                                                        <SolidColorBrush Color="Transparent"/>
+                                                    </Setter.Value>
+                                                </Setter>
+                                            </Style.Setters>
+                                            <Style.Triggers>
+
+                                                <DataTrigger Binding="{Binding State}" Value="Selected">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <ColorAnimation
+                                                        Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
+                                                        Duration="0:0:0.5" To="GreenYellow" />
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <ColorAnimation
+                                                        Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
+                                                        Duration="0:0:0.2" To="Transparent"/>
+
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                        
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                                <DataTrigger Binding="{Binding State}" Value="Danger">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard x:Name="A">
+                                                            <Storyboard>
+                                                                <ColorAnimation
+                                                        Storyboard.TargetProperty="Background.(SolidColorBrush.Color)"
+                                                        Duration="0:0:0.5" From="Transparent" To="Red" AutoReverse="True" RepeatBehavior="Forever"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <RemoveStoryboard BeginStoryboardName="A"></RemoveStoryboard>
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Button.Style>
+                                </Button>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+
+                <ItemsControl Grid.Column="1" Grid.Row="1" ItemsSource="{Binding Board.ChessPieces}" BorderThickness="10" BorderBrush="Transparent">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="{Binding Board.Dimensions.Y}" Columns="{Binding Board.Dimensions.X}">
+                            </UniformGrid>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid VerticalAlignment="Center" HorizontalAlignment="Center">
+                                <Grid.Resources>
+                                    <converters:MovingConverter x:Key="movingConverter"></converters:MovingConverter>
+                                </Grid.Resources>
+                                <Image VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False" Width="50" Height="50">
+                                    <Image.Source>
+                                        <MultiBinding Converter="{StaticResource imageConverter}">
+                                            <Binding Path="PieceType"/>
+                                            <Binding Path="PieceTeam"/>
+                                        </MultiBinding>
+                                    </Image.Source>
+                                    <Image.Style>
+                                        <Style>
+                                            <Style.Triggers>
+                                                <DataTrigger Binding="{Binding Beaten}" Value="True">
+                                                    <DataTrigger.EnterActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation
+                                                        Storyboard.TargetProperty="Opacity"
+                                                        Duration="0:0:0.5" From="1" To="0"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.EnterActions>
+                                                    <DataTrigger.ExitActions>
+                                                        <BeginStoryboard>
+                                                            <Storyboard>
+                                                                <DoubleAnimation
+                                                        Storyboard.TargetProperty="Opacity"
+                                                        Duration="0:0:0.5" From="0" To="1"/>
+                                                            </Storyboard>
+                                                        </BeginStoryboard>
+                                                    </DataTrigger.ExitActions>
+                                                </DataTrigger>
+                                            </Style.Triggers>
+                                        </Style>
+                                    </Image.Style>
+                                    <Image.RenderTransform>
+                                        <TranslateTransform x:Name="trans" X="{Binding Converter={StaticResource movingConverter},Path=MovingDistance.NewXAxisDistance}" Y="{Binding Converter={StaticResource movingConverter},Path=MovingDistance.NewYAxisDistance}"></TranslateTransform>
+                                    </Image.RenderTransform>
+                                    <Image.Triggers>
+                                        <EventTrigger RoutedEvent="Binding.TargetUpdated">
+                                            <BeginStoryboard>
+                                                <Storyboard>
+                                                    <DoubleAnimation
+                                                       Storyboard.TargetProperty="RenderTransform.(TranslateTransform.X)"
+                                                        Duration="0:0:0.5" From="{Binding Converter={StaticResource movingConverter},Path= MovingDistance.OldXAxisDistance}" To="{Binding Converter={StaticResource movingConverter},Path=MovingDistance.NewXAxisDistance, NotifyOnTargetUpdated=True}" />
+                                                    <DoubleAnimation
+                                                         Storyboard.TargetProperty="RenderTransform.(TranslateTransform.Y)"
+                                                        Duration="0:0:0.5" From="{Binding Converter={StaticResource movingConverter},Path=MovingDistance.OldYAxisDistance}" To="{Binding Converter={StaticResource movingConverter},Path=MovingDistance.NewYAxisDistance, NotifyOnTargetUpdated=True}"/>
+                                                </Storyboard>
+                                            </BeginStoryboard>
+                                        </EventTrigger>
+                                    </Image.Triggers>
+                                </Image>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+
+                <!--SideBottom-->
+                <ItemsControl Grid.Column="1" Grid.Row="2"  ItemsSource="{Binding Board.OrientationChars}" BorderBrush="#353e57" BorderThickness="4" Background="#353e57">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="1" Columns="{Binding Board.X}" Height="50">
+                            </UniformGrid>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Label Content="{Binding}" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+                <!--SideRight-->
+                <ItemsControl Grid.Column="2" Grid.Row="1"  ItemsSource="{Binding Board.OrientationNumbers}" BorderBrush="#353e57" BorderThickness="4" Background="#353e57">
+                    <ItemsControl.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <UniformGrid Rows="{Binding Board.Y}" Columns="1" Width="50">
+                            </UniformGrid>
+                        </ItemsPanelTemplate>
+                    </ItemsControl.ItemsPanel>
+                    <ItemsControl.ItemTemplate>
+                        <DataTemplate>
+                            <Grid>
+                                <Label Content="{Binding}" HorizontalAlignment="Center" VerticalAlignment="Center"></Label>
+                            </Grid>
+                        </DataTemplate>
+                    </ItemsControl.ItemTemplate>
+                </ItemsControl>
+            </Grid>
+        </Border>
+        <Border Grid.Row="0" Grid.Column="2" BorderBrush="Black" BorderThickness="4" Width="108" Height="448"   Margin="20,0,0,0"  VerticalAlignment="Top">
+            <StackPanel  VerticalAlignment="Top">
+                <TextBlock Text="Beaten White Piece" TextAlignment="Center" TextWrapping="Wrap" FontSize="15" Background="#485475" Foreground="White"></TextBlock>
+                <Grid>
+                    <ItemsControl ItemsSource="{Binding  BeatenPieces.BackgroundFields}" Height="200">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="4" Columns="2">
+                                </UniformGrid>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Rectangle>
+                                        <Rectangle.Fill>
+                                            <MultiBinding Converter="{StaticResource colorConvertor}">
+                                                <Binding Path="YPosition"/>
+                                                <Binding Path="XPosition"/>
+                                            </MultiBinding>
+                                        </Rectangle.Fill>
+                                    </Rectangle>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                    <ItemsControl ItemsSource="{Binding BeatenPieces.BeatenWhitePieces}"  Width="100" Height="200">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <UniformGrid Rows="4" Columns="2">
+                                </UniformGrid>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Image VerticalAlignment="Center" HorizontalAlignment="Center" IsHitTestVisible="False" Width="50" Height="50">
+                                        <Image.Source>
+                                            <MultiBinding Converter="{StaticResource imageConverter}">
+                                                <Binding Path="PieceType"/>
+                                                <Binding Path="PieceTeam"/>
+                                            </MultiBinding>
+                                        </Image.Source>
+                                    </Image>
+                                </Grid>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </Grid>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="0" Grid.Column="3" Margin="30,0,0,0" BorderBrush="Black" BorderThickness="4" Background="#485475">
+            <StackPanel>
+                <Label Content="Current Game"  HorizontalContentAlignment="Center" FontSize="30" Background="#485475" Foreground="White" Width="250"></Label>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*"/>
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="30"/>
+                        <RowDefinition Height="30"/>
+                    </Grid.RowDefinitions>
+                    <Button Grid.Row="0" Grid.Column="0" Content="Save" Command="{Binding PlayedGamesBox.SaveCommand}"  Foreground="White" Background="#353e57" BorderThickness="2" BorderBrush="#2a344f"/>
+                    <Grid Grid.Row="1" Grid.Column="1">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="auto"/>
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <TextBox Text="{Binding PlayedGamesBox.FileToLoad}" Foreground="White" FontSize="12" VerticalContentAlignment="Center" Background="#485475" BorderThickness="2" BorderBrush="#2a344f"></TextBox>
+                        <Button  Grid.Row="0" Grid.Column="1" Content="Load" Width="50" Command="{Binding PlayedGamesBox.LoadCommand}"  Foreground="White" Background="#353e57" BorderThickness="2" BorderBrush="#2a344f"/>
+                    </Grid>
+
+                </Grid>
+                <ScrollViewer Grid.Row="0" Grid.Column="1" Width="250" Height="420" VerticalAlignment="Top" >
+                    <ItemsControl ItemsSource="{Binding PlayedGamesBox.PlayedRounds}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <StackPanel Background="Transparent">
+
+                                </StackPanel>
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <Grid>
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="*"/>
+                                        <ColumnDefinition Width="*"/>
+                                    </Grid.ColumnDefinitions>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                    </Grid.RowDefinitions>
+                                    <Label Grid.Row="0" Grid.Column="0" Content="{Binding Move}" HorizontalContentAlignment="Center" Background="White"></Label>
+                                    <Button Grid.Row="0" Grid.Column="1" Content="Resume" Background="White" Command="{Binding ResumeCommand}"></Button>
+                                </Grid>
+
+
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </ScrollViewer>
+            </StackPanel>
+        </Border>
+        <Border Grid.Row="0" Grid.Column="4" Margin="0,0,0,0" Width="40" Height="40" BorderBrush="Black" BorderThickness="4" Background="#485475" VerticalAlignment="Top">
+            <Button Background="Transparent" Command="{Binding PlayedGamesBox.RestartCommand}">
+                <Image Source="..\Images\a.png" Width="20" Height="20"></Image>
+            </Button>
+        </Border>
+    </Grid>
+</UserControl>
